@@ -44,7 +44,3 @@ class GeneratorAPI:
                 break
 
             self._page = page.next
-
-
-test = GeneratorAPI(per_page=3)
-print(list(test))
