@@ -15,7 +15,7 @@ class TypeMessage(enum.Enum):
 
 
 class JSONMessage(ABC):
-    def __init__(self, message_type: TypeMessage, payload: dict):
+    def __init__(self, message_type: TypeMessage, payload: dict) -> None:
         """Обязательные атрибуты
         :param message_type: TypeMessage (тип сообщения)
         :param payload: dict (тело сообщения)"""
@@ -30,7 +30,7 @@ class JSONMessage(ABC):
 
     @abstractmethod
     def to_dict(self) -> dict:
-        """Возвращение сообщения"""
+        """Преобразование сообщения"""
         pass
 
 
@@ -40,17 +40,11 @@ class TelegramMessage(JSONMessage):
 
 
 class MattermostMessage(JSONMessage):
-    def __init__(self, payload: dict):
-        super().__init__(TypeMessage.MATTERMOST, payload)
-
     def to_dict(self) -> dict:
         return self.payload
 
 
 class SlackMessage(JSONMessage):
-    def __init__(self, payload: dict):
-        super().__init__(TypeMessage.SLACK, payload)
-
     def to_dict(self) -> dict:
         return self.payload
 
@@ -61,6 +55,7 @@ class ParsedMessage:
         self.payload = payload
 
     def to_dict(self):
+        """Унифицированное представление"""
         return {
             'type': self.type_message.name,
             'payload': self.payload
@@ -75,17 +70,17 @@ class Parser(ABC):
 
 
 class TelegramParser(Parser):
-    def parse(self, message: JSONMessage):
+    def parse(self, message: TelegramMessage):
         return ParsedMessage(TypeMessage.TELEGRAM, message.payload)
 
 
 class MattermostParser(Parser):
-    def parse(self, message: JSONMessage):
+    def parse(self, message: MattermostMessage):
         return ParsedMessage(TypeMessage.MATTERMOST, message.payload)
 
 
 class SlackParser(Parser):
-    def parse(self, message: JSONMessage):
+    def parse(self, message: SlackMessage):
         return ParsedMessage(TypeMessage.SLACK, message.payload)
 
 
