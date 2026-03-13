@@ -37,39 +37,41 @@ class Discount(ABC):
     @abstractmethod
     def activate(self) -> None:
         """Активация скидки"""
+        pass
 
     @abstractmethod
     def deactivate(self) -> None:
         """Деактивация скидки"""
+        pass
 
 
 class FixedDiscount(Discount):
-    def __init__(self, value: int | float) -> None:
-        super().__init__(name=EnumDiscount.FIXED, value=value)
+    def activate(self) -> None:
+        self.is_active = True
 
-    def activate(self) -> None: pass
-    def deactivate(self) -> None: pass
+    def deactivate(self) -> None:
+        self.is_active = False
 
 
 class LoyaltyDiscount(Discount):
-    def __init__(self, value: int | float) -> None:
-        super().__init__(name=EnumDiscount.LOYALTY, value=value)
+    def activate(self) -> None:
+        self.is_active = True
 
-    def activate(self) -> None: pass
-    def deactivate(self) -> None: pass
+    def deactivate(self) -> None:
+        self.is_active = False
 
 
 class SpecDiscount(Discount):
-    def __init__(self, value: int | float) -> None:
-        super().__init__(name=EnumDiscount.SPEC, value=value)
+    def activate(self) -> None:
+        self.is_active = True
 
-    def activate(self) -> None: pass
-    def deactivate(self) -> None: pass
+    def deactivate(self) -> None:
+        self.is_active = False
 
 
 class PercentDiscount(Discount):
-    def __init__(self, value: int | float) -> None:
-        super().__init__(name=EnumDiscount.PERCENT, value=value)
+    def activate(self) -> None:
+        self.is_active = True
 
-    def activate(self) -> None: pass
-    def deactivate(self) -> None: pass
+    def deactivate(self) -> None:
+        self.is_active = False
