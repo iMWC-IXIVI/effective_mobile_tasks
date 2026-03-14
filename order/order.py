@@ -14,12 +14,12 @@ class BaseOrder(ABC):
 
     :param user: User (имя пользователя)
     :param price: int (цена заказа)
-    :param discount: Any[FixedDiscount, PercentDiscount] | None = None (скидка на товар если она есть)
+    :param discount: FixedDiscount | PercentDiscount | None = None (скидка на товар если она есть)
 
     Атрибуты:
     id: uuid.UUID (идентификатор заказа)
     """
-    def __init__(self, user: User, price: int, discount: Any[FixedDiscount, PercentDiscount] | None = None) -> None:
+    def __init__(self, user: User, price: int, discount: FixedDiscount | PercentDiscount | None = None) -> None:
         if not user or not isinstance(user, User):
             raise OrderValueError('Поле user должен быть не пустым или принадлежать типу User')
 
