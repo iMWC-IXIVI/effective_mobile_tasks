@@ -10,7 +10,7 @@ class Order(Base):
     id: Mapped[int] = mapped_column(primary_key=True, comment='Идентификатор')
     message: Mapped[str] = mapped_column(String, comment='Пожелания')
 
-    client_id: Mapped[int] = mapped_column(ForeignKey('Client.id', ondelete='CASCADE'))
+    client_id: Mapped[int] = mapped_column(ForeignKey('clients.id', ondelete='CASCADE'))
     client = relationship('Client', back_populates='orders')
 
     book_orders = relationship('OrderBook', back_populates='order', cascade='all, delete-orphan', passive_deletes=True)

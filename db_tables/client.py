@@ -1,7 +1,6 @@
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
 from core import Base
 
 
@@ -12,7 +11,7 @@ class Client(Base):
     name: Mapped[str] = mapped_column(String(255), index=True, comment='Имя')
     email: Mapped[str] = mapped_column(String(255), comment='Почта')
 
-    city_id: Mapped[int] = mapped_column(ForeignKey('City.id', ondelete='CASCADE'))
+    city_id: Mapped[int] = mapped_column(ForeignKey('cities.id', ondelete='CASCADE'))
     city = relationship('City', back_populates='clients')
 
     orders = relationship('Order', back_populates='client', cascade='all, delete-orphan', passive_deletes=True)

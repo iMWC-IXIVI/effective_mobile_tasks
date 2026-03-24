@@ -12,10 +12,10 @@ class Book(Base):
     price: Mapped[int] = mapped_column(Integer, comment='Цена')
     counter: Mapped[int] = mapped_column(Integer, comment='Количество на складе')
 
-    genre_id: Mapped[int] = mapped_column(ForeignKey('Genre.id', ondelete='CASCADE'))
+    genre_id: Mapped[int] = mapped_column(ForeignKey('genres.id', ondelete='CASCADE'))
     genre = relationship('Genre', back_populates='books')
 
-    author_id: Mapped[int] = mapped_column(ForeignKey('Author.id', ondelete='CASCADE'))
+    author_id: Mapped[int] = mapped_column(ForeignKey('authors.id', ondelete='CASCADE'))
     author = relationship('Author', back_populates='books')
 
     book_orders = relationship('OrderBook', back_populates='book', cascade='all, delete-orphan', passive_deletes=True)

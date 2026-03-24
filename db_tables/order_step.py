@@ -13,8 +13,8 @@ class OrderStep(Base):
     start_datetime: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     end_datetime: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
-    client_id: Mapped[int] = mapped_column(ForeignKey('Client.id', ondelete='CASCADE'))
+    client_id: Mapped[int] = mapped_column(ForeignKey('clients.id', ondelete='CASCADE'))
     client = relationship('Client', back_populates='order_steps')
 
-    step_id: Mapped[int] = mapped_column(ForeignKey('Step.id', ondelete='CASCADE'))
+    step_id: Mapped[int] = mapped_column(ForeignKey('steps.id', ondelete='CASCADE'))
     step = relationship('Step', 'order_steps')
