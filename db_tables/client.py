@@ -14,3 +14,5 @@ class Client(Base):
 
     city_id: Mapped[int] = mapped_column(ForeignKey('City.id', ondelete='CASCADE'))
     city = relationship('City', back_populates='clients')
+
+    orders = relationship('Order', back_populates='client', cascade='all, delete-orphan', passive_deletes=True)

@@ -17,3 +17,5 @@ class Book(Base):
 
     author_id: Mapped[int] = mapped_column(ForeignKey('Author.id', ondelete='CASCADE'))
     author = relationship('Author', back_populates='books')
+
+    book_orders = relationship('OrderBook', back_populates='book', cascade='all, delete-orphan', passive_deletes=True)
