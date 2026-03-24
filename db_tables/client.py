@@ -16,3 +16,5 @@ class Client(Base):
     city = relationship('City', back_populates='clients')
 
     orders = relationship('Order', back_populates='client', cascade='all, delete-orphan', passive_deletes=True)
+
+    order_steps = relationship('OrderStep', back_populates='client', cascade='all, delete-orphan', passive_deletes=True)
