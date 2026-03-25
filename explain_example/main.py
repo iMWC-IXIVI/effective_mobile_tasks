@@ -76,6 +76,7 @@ if __name__ == '__main__':
     # SELECT * FROM users WHERE country_code = 'RU' AND rating > 100
     # ['Seq Scan on users  (cost=0.00..25310.00 rows=499167 width=53) (actual time=0.006..66.055 rows=498833 loops=1)', "  Filter: ((rating < 100) AND (country_code = 'RU'::countrycode))", '  Rows Removed by Filter: 501167', 'Planning Time: 0.049 ms', 'Execution Time: 76.335 ms']
     # Get data = 0.0838s
+    # ==============ДАЛЬШЕ КОД===============
     # total_counter = 0
     # for _ in range(10):
     #     total_counter += explain_analyze_data()[1]
