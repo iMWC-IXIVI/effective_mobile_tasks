@@ -4,7 +4,7 @@ from functools import wraps
 from time import perf_counter
 
 from sqlalchemy.future import select
-from sqlalchemy import text
+from sqlalchemy import text, Index
 
 from core import Base, Session, engine
 from user import User, CountryCode
@@ -65,6 +65,12 @@ def explain_analyze_data():
     return result
 
 
+@timer
+def add_index_country_code() -> None:
+    """Добавление индекса по полю country_code"""
+    Index('idx_users_country_code', User.country_code).create(bind=engine, checkfirst=True)
+
+
 if __name__ == '__main__':
     # Создание таблицы users
     # create_all_tables()
@@ -82,4 +88,20 @@ if __name__ == '__main__':
     #     total_counter += explain_analyze_data()[1]
     # print(f'Get data = {total_counter / 10:.4f}s')
 
+    # Задание №2. Создайте индекс, который, по вашему мнению, максимально ускорит этот запрос. Объясните, почему вы выбрали именно такой тип/комбинацию полей.
+    # Сначала добавляю индекс для равенства, а потом для сравнения, важно, что не все индексы стоит добавлять, поэтому, сначала добавлю по полю countre_code, если записей будет много, то стоит добавить и по rating
+    # add_index_country_code()
+
+    # Задание №3. Снова выполните EXPLAIN ANALYZE для того же запроса. Сравните показатели cost, время и использованный план (Seq Scan vs Index Scan).
+    # ['Bitmap Heap Scan on users  (cost=5564.97..23362.47 rows=499167 width=53) (actual time=9.058..55.054 rows=498833 loops=1)', "  Recheck Cond: (country_code = 'RU'::countrycode)", '  Filter: (rating < 100)', '  Heap Blocks: exact=10310', '  ->  Bitmap Index Scan on idx_users_country_code  (cost=0.00..5440.18 rows=499167 width=0) (actual time=8.169..8.169 rows=498833 loops=1)', "        Index Cond: (country_code = 'RU'::countrycode)", 'Planning Time: 0.070 ms', 'Execution Time: 65.020 ms']
+    # Get data = 0.0720s
+    # ==============ДАЛЬШЕ КОД===============
+    # total_counter = 0
+    # for _ in range(10):
+    #     total_counter += explain_analyze_data()[1]
+    # print(f'Get data = {total_counter / 10:.4f}s')
+
+    # Задание №4. Вопрос для размышления: Почему простого индекса на country_code может быть недостаточно? Что происходит с данными после фильтрации по стране?
+    # В случае с моим примером, у меня результат по country_code равняется примерно 500_000, это слишком много, и в нынешней реализации SQL снова придётся перебирать записи из 500_000 и искать уже по rating где rating < 100
+    # Стоит в функцию add_index_country_code() добавить ещё и rating и переименовать непосредственно название функции и название самого индекса.
     pass
