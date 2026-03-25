@@ -7,3 +7,4 @@
 * ### [Order](./order/)
 * ### [Refactor](./refactor/)
 * ### [Create Tables](./db_tables/)
+* ### [EXPLAIN ANALYZE](./explain_example/)
