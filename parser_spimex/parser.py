@@ -1,12 +1,12 @@
 import bs4 as bs
 
 from urllib import request
-from pathlib import Path
+
+from core import SRC_PATH
 
 
 BASE_URL = 'https://spimex.com/'
 URL = 'https://spimex.com/markets/oil_products/trades/results/'
-SAVE_PATH = Path('./files')
 
 
 def get_html() -> bs.BeautifulSoup:
@@ -33,4 +33,4 @@ def parse_html(parse: bs.BeautifulSoup) -> tuple[str, str]:
 
 def download_file(url: str, file_path: str) -> None:
     """Загрузка файла"""
-    request.urlretrieve(url, SAVE_PATH/file_path)
+    request.urlretrieve(url, SRC_PATH/file_path)
