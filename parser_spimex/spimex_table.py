@@ -19,6 +19,6 @@ class SpimexTradingResult(Base):
     volume: Mapped[int | None] = mapped_column(Integer())
     total: Mapped[int] = mapped_column(Integer())
     count: Mapped[int] = mapped_column(Integer())
-    date: Mapped[date] = mapped_column(Date(), default=date.today)
+    date: Mapped[date] = mapped_column(Date())
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), onupdate=datetime.now)
