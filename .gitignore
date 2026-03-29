@@ -1,6 +1,7 @@
 # LOCAL
 
 .env
+parser_spimex/files/
 
 # PYTHON
 
