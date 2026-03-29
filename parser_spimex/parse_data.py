@@ -48,8 +48,10 @@ def read_table_pdf(file_name: str) -> Generator:
 def parse_pdf(table_pdf: Generator, file_date: datetime.date) -> list[dict]:
     result = []
     for index, table in table_pdf:
+        if table is None:
+            continue
 
-        if index == 0:
+        if index <= 2:
             table = table[2:]
 
         for row in table:
@@ -90,6 +92,7 @@ def get_table_xls(file_name: str) -> pd.DataFrame:
 
     df = df.iloc[cords[0] + 1:-2,1:]
     df.columns = [excel_fields[i] for i in range(excel_count_columns)]
+    df = df.dropna(subset=[excel_fields[1]])
     df = df[2:]
     df.reset_index(drop=True, inplace=True)
 

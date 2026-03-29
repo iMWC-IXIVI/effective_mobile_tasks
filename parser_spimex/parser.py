@@ -7,7 +7,6 @@ from core import SRC_PATH
 
 
 BASE_URL = 'https://spimex.com/'
-URL = 'https://spimex.com/markets/oil_products/trades/results/'
 BASE_DATE = datetime.strptime('01.01.2023', '%d.%m.%Y').date()
 
 
