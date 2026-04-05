@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block body %}
+    {% for article in articles %}
+        <h1>
+            {{ article.title }}
+        </h1>
+        <p>
+            {{ article.text }}
+        </p>
+    {% endfor %}
+
+    {% if page_obj.has_previous %}
+        <a href="?page=1">Первая</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Назад</a>
+    {% endif %}
+    {{ page_obj.number }}...{{ paginator.num_pages }}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Вперёд</a>
+        <a href="?page={{ paginator.num_pages }}">Последняя</a>
+    {% endif %}
+
+{% endblock body %}

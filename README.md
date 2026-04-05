@@ -12,3 +12,7 @@
 * ### [Create Tables](./db_tables/)
 * ### [EXPLAIN ANALYZE](./explain_example/)
 * ### [SPIMEX](./parser_spimex/)
+
+# Практика по теме №3 - Django
+
+* ### [Articles](./article_app)
