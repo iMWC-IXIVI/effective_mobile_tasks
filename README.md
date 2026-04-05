@@ -11,3 +11,4 @@
 
 * ### [Create Tables](./db_tables/)
 * ### [EXPLAIN ANALYZE](./explain_example/)
+* ### [SPIMEX](./parser_spimex/)
