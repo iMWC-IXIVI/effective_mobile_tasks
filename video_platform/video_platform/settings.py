@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # APPS
-
+    'video_app.apps.VideoAppConfig'
     # INSTALLED APPS
 
 ]
