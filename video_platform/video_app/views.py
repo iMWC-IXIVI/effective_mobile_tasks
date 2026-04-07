@@ -42,3 +42,9 @@ class VideoViewSet(ReadOnlyModelViewSet):
         Video.objects.filter(id=video.id).update(total_likes=F('total_likes') + 1)
 
         return Response({'message': 'like successfully'}, HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'])
+    def ids(self, request, *args, **kwargs):
+        video_ids = self.get_queryset().filter(is_published=True).values_list('id', flat=True)
+
+        return Response(video_ids)
