@@ -54,3 +54,8 @@ class VideoViewSet(ReadOnlyModelViewSet):
         likes_query = Like.objects.filter(video=OuterRef('id')).values('video').annotate(likes_count=Count('id')).values('likes_count')
         videos = Video.objects.annotate(likes_count=Subquery(likes_query)).values('id', 'likes_count')
         return Response(videos)
+
+    @action(detail=False, methods=['get'], url_path='statistics-group-by')
+    def statistics_group_by(self, request, *args, **kwargs):
+        videos = Video.objects.annotate(Count('like')).values('id', 'total_likes')
+        return Response(videos)
