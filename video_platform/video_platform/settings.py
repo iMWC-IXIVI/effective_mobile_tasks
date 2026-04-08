@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # APPS
     'video_app.apps.VideoAppConfig',
+    'utils.apps.UtilsConfig',
     # INSTALLED APPS
     'rest_framework',
 ]
@@ -101,3 +102,14 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+if not DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'loggers': {
+            'django.db.backends': {
+                'level': 'ERROR'
+            }
+        }
+    }
