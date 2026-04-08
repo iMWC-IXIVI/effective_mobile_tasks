@@ -2,6 +2,7 @@
 
 .env
 parser_spimex/files/
+video_platform/media/
 
 # PYTHON
 
