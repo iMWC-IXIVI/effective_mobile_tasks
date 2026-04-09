@@ -1,10 +1,11 @@
 from django.db import transaction
 from django.db.models import F, OuterRef, Subquery, Count
 
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
 
 from .models import Video, Like
 from .serializers import VideoModelSerializer, VideoDetailModelSerializer
@@ -32,6 +33,9 @@ class VideoViewSet(ReadOnlyModelViewSet):
         video = self.get_object()
         user = request.user
 
+        if user.is_anonymous:
+            return Response({'error': 'Unauthorized'}, status=HTTP_401_UNAUTHORIZED)
+
         if video.owner == user:
             return Response({'error': 'you cant like this video'}, HTTP_400_BAD_REQUEST)
 
@@ -46,7 +50,6 @@ class VideoViewSet(ReadOnlyModelViewSet):
     @action(detail=False, methods=['get'])
     def ids(self, request, *args, **kwargs):
         video_ids = self.get_queryset().filter(is_published=True).values_list('id', flat=True)
-
         return Response(video_ids)
 
     @action(detail=False, methods=['get'], url_path='statistics-subquery')
