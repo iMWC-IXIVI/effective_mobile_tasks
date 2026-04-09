@@ -12,6 +12,8 @@ User = get_user_model()
 
 class VideoTestCase(APITestCase):
     def setUp(self) -> None:
+        """Начальные действия перед каждым тестом"""
+
         self.user = User.objects.create_user(
             username='UserTest',
             password='usertest',
@@ -30,6 +32,8 @@ class VideoTestCase(APITestCase):
         )
 
     def test_get_published_video(self) -> None:
+        """Тестирование паттерна GET-/v1/videos/"""
+
         name_fields = {'id', 'name', 'created_at', 'owner_id'}
         response = self.client.get('/v1/videos/')
 
@@ -39,12 +43,14 @@ class VideoTestCase(APITestCase):
             videos = response.data
 
         self.assertEqual(response.status_code, HTTP_200_OK)
-        self.assertEqual(len(videos), 2)
+        self.assertEqual(len(videos), 1)
 
         for video in videos:
             self.assertEqual(set(video.keys()), name_fields)
 
     def test_detail_login_videos(self) -> None:
+        """Тестирование паттерна GET-/v1/videos/{video.id}/ с авторизацией"""
+
         fields_name = {'id', 'name', 'created_at', 'owner_id'}
 
         self.client.login(username='UserTest', password='usertest')
@@ -61,6 +67,8 @@ class VideoTestCase(APITestCase):
             self.assertEqual(video_fields, fields_name)
 
     def test_detail_login_videos_expand(self) -> None:
+        """Тестирование паттерна GET-/v1/videos/{video.id}/?user_expand=true с авторизацией"""
+
         fields_name = {'id', 'name', 'created_at', 'owner'}
 
         self.client.login(username='UserTest', password='usertest')
@@ -78,6 +86,8 @@ class VideoTestCase(APITestCase):
             self.assertEqual(video_fields, fields_name)
 
     def test_detail_logout_videos(self) -> None:
+        """Тестирование паттерна GET-/v1/videos/{video.id}/ без авторизацией"""
+
         fields_name = {'id', 'name', 'created_at', 'owner_id'}
 
         videos = [
@@ -93,6 +103,8 @@ class VideoTestCase(APITestCase):
                 self.assertEqual(video_fields, fields_name)
 
     def test_detail_logout_videos_expand(self) -> None:
+        """Тестирование паттерна GET-/v1/videos/{video.id}/?user_expand=true с авторизацией"""
+
         fields_name = {'id', 'name', 'created_at', 'owner'}
 
         videos = [
@@ -110,6 +122,8 @@ class VideoTestCase(APITestCase):
 
 class VideoLikeTestCase(APITestCase):
     def setUp(self) -> None:
+        """Начальные действия перед каждым тестом"""
+
         self.main_user = User.objects.create_user(
             username='UserTest',
             password='usertest',
@@ -129,6 +143,8 @@ class VideoLikeTestCase(APITestCase):
         )
 
     def test_detail_video_like_yourself(self) -> None:
+        """Тестирование паттерна POST-/v1/videos/{video.id}/likes/ проверка на само-лайк"""
+
         self.client.login(username='UserTest', password='usertest')
 
         response = self.client.post(f'/v1/videos/{self.video.id}/likes/')
@@ -137,6 +153,8 @@ class VideoLikeTestCase(APITestCase):
         self.assertEqual(response.data['error'], 'you cant like this video')
 
     def test_detail_video_like(self) -> None:
+        """Тестирование паттерна POST-/v1/videos/{video.id}/likes/"""
+
         self.client.login(username='UserTest2', password='usertest2')
 
         response = self.client.post(f'/v1/videos/{self.video.id}/likes/')
@@ -145,6 +163,8 @@ class VideoLikeTestCase(APITestCase):
         self.assertEqual(response.data['message'], 'like successfully')
 
     def test_detail_video_like_unauthorized(self) -> None:
+        """Тестирование паттерна POST-/v1/videos/{video.id}/likes/ не авторизованным пользователем"""
+
         response = self.client.post(f'/v1/videos/{self.video.id}/likes/')
 
         self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED)
@@ -153,6 +173,8 @@ class VideoLikeTestCase(APITestCase):
 
 class AnotherVideoTestCase(APITestCase):
     def setUp(self) -> None:
+        """Начальные действия перед каждым тестом"""
+
         users = [
             User.objects.create_user(username='UserTest', password='usertest'),
             User.objects.create_user(username='Test1', password='test1'),
@@ -177,6 +199,8 @@ class AnotherVideoTestCase(APITestCase):
         self.video_likes = Video.objects.all().values_list('total_likes', flat=True)
 
     def test_check_ids(self) -> None:
+        """Тестирование паттерна GET-/v1/videos/ids/"""
+
         with self.assertNumQueries(1):
             response = self.client.get('/v1/videos/ids/')
 
@@ -184,6 +208,8 @@ class AnotherVideoTestCase(APITestCase):
         self.assertEqual(len(response.data), 2)
 
     def test_check_statistics_subquery(self) -> None:
+        """Тестирование паттерна GET-/v1/videos/statistics-subquery/"""
+
         fields_name = {'id', 'likes_count'}
         with self.assertNumQueries(1):
             response = self.client.get('/v1/videos/statistics-subquery/')
@@ -198,7 +224,9 @@ class AnotherVideoTestCase(APITestCase):
             self.assertEqual(data_field, fields_name)
 
     def test_check_statistics_group_by(self) -> None:
-        fields_name = {'id', 'total_likes'}
+        """Тестирование паттерна GET-/v1/videos/statistics-group-by/"""
+
+        fields_name = {'id', 'likes_total'}
         with self.assertNumQueries(1):
             response = self.client.get('/v1/videos/statistics-group-by/')
 

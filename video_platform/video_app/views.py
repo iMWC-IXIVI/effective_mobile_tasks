@@ -13,11 +13,19 @@ from .permissions import PublishedOrOwnerPermission
 
 
 class VideoViewSet(ReadOnlyModelViewSet):
-    queryset = Video.objects.select_related('owner')
     serializer_class = VideoModelSerializer
     permission_classes = [PublishedOrOwnerPermission, ]
 
+    def get_queryset(self):
+        """Замена стандартного queryset для правильного отображения списка видео"""
+
+        if self.action == 'list':
+            return Video.objects.select_related('owner').filter(is_published=True)
+        return Video.objects.select_related('owner')
+
     def retrieve(self, request, *args, **kwargs):
+        """Переопределение детальной информации о видео"""
+
         video = self.get_object()
 
         if request.query_params.get('user_expand') == 'true':
@@ -30,6 +38,8 @@ class VideoViewSet(ReadOnlyModelViewSet):
     @action(detail=True, methods=['post'])
     @transaction.atomic
     def likes(self, request, pk, *args, **kwargs):
+        """Создание лайков на видео (атомарно)"""
+
         video = self.get_object()
         user = request.user
 
@@ -49,16 +59,22 @@ class VideoViewSet(ReadOnlyModelViewSet):
 
     @action(detail=False, methods=['get'])
     def ids(self, request, *args, **kwargs):
+        """Вывод всех идентификаторов опубликованных видео"""
+
         video_ids = self.get_queryset().filter(is_published=True).values_list('id', flat=True)
         return Response(video_ids)
 
     @action(detail=False, methods=['get'], url_path='statistics-subquery')
     def statistics_subquery(self, request, *args, **kwargs):
+        """Сбор лайков по видео через подзапрос"""
+
         likes_query = Like.objects.filter(video=OuterRef('id')).values('video').annotate(likes_count=Count('id')).values('likes_count')
         videos = Video.objects.annotate(likes_count=Subquery(likes_query)).values('id', 'likes_count')
         return Response(videos)
 
     @action(detail=False, methods=['get'], url_path='statistics-group-by')
     def statistics_group_by(self, request, *args, **kwargs):
-        videos = Video.objects.annotate(Count('like')).values('id', 'total_likes')
+        """Сбор лайков по видео через группировку"""
+
+        videos = Video.objects.annotate(likes_total=Count('like')).values('id', 'likes_total')
         return Response(videos)
