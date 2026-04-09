@@ -60,5 +60,5 @@ class VideoViewSet(ReadOnlyModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='statistics-group-by')
     def statistics_group_by(self, request, *args, **kwargs):
-        videos = Video.objects.annotate(Count('like')).values('id', 'total_likes')
+        videos = Video.objects.annotate(likes_total=Count('like')).values('id', 'likes_total')
         return Response(videos)

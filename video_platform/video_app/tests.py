@@ -198,7 +198,7 @@ class AnotherVideoTestCase(APITestCase):
             self.assertEqual(data_field, fields_name)
 
     def test_check_statistics_group_by(self) -> None:
-        fields_name = {'id', 'total_likes'}
+        fields_name = {'id', 'likes_total'}
         with self.assertNumQueries(1):
             response = self.client.get('/v1/videos/statistics-group-by/')
 
