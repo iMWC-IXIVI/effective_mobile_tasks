@@ -19,7 +19,11 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+        """Ручка для создания 10к пользователей и 100к видеозаписей с рандомной реализацией лайков"""
+
         self.stdout.write(f'Created users + videos')
+
+        # Создание 10к пользователей, частичная загрузка через bulk
 
         butch_users = []
         for index in range(10_000):
@@ -32,6 +36,8 @@ class Command(BaseCommand):
         User.objects.bulk_create(butch_users)
 
         users = User.objects.all()
+
+        # Создание 100к видео, частичная загрузка через bulk
 
         butch_videos = []
         for index in range(100_000):
@@ -46,6 +52,11 @@ class Command(BaseCommand):
         Video.objects.bulk_create(butch_videos)
         videos = Video.objects.all()
 
+        # Копирование файла, лежащий в fixture_files, req.mp4 (объем на диске 4КБ (обычный req.txt переформатированный в mp4))
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # ~~~~~~~~~~~~~~~ДОЛГО~~~~~~~~~~~~~~~~
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
         src_url = settings.BASE_DIR/'fixture_files'/'req.mp4'
         butch_video_files = []
         for index, video in enumerate(videos):
@@ -59,6 +70,8 @@ class Command(BaseCommand):
                 butch_video_files = []
 
         VideoFile.objects.bulk_create(butch_video_files)
+
+        # Рандомнное создание лайков из рандомных пользователей с учетом всех условий
 
         butch_likes = []
         for video in videos:
@@ -78,3 +91,5 @@ class Command(BaseCommand):
 
         subquery_likes = Like.objects.filter(video=OuterRef('id')).values('video').annotate(count=Count('id')).values('count')
         Video.objects.update(total_likes=Subquery(subquery_likes))
+
+        self.stdout.write(f'Command done, created 10k users, 100k Video and VideoFile, 100k+ likes')

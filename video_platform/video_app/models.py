@@ -51,6 +51,7 @@ class Video(models.Model):
 
 class VideoFile(models.Model):
     """Модель - файла видео"""
+
     video = models.ForeignKey(
         'Video',
         on_delete=models.CASCADE,
@@ -89,6 +90,7 @@ class VideoFile(models.Model):
 
 class Like(models.Model):
     """Модель лайков"""
+
     video = models.ForeignKey(
         'Video',
         on_delete=models.CASCADE,
