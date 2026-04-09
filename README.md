@@ -16,3 +16,4 @@
 # Практика по теме №3 - Django
 
 * ### [Articles](./article_app)
+* ### [Video Platform](./video_platform/)
