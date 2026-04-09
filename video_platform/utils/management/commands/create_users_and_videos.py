@@ -52,7 +52,7 @@ class Command(BaseCommand):
             media_url = settings.MEDIA_ROOT/'videos'/f'video_{index}.mp4'
 
             shutil.copy(src_url, media_url)
-            butch_video_files.append(VideoFile(video=video, file=f'video_{index}.mp4', quality=random.choice(VideoFile.Quality.choices[0])))
+            butch_video_files.append(VideoFile(video=video, file=f'video_{index}.mp4', quality=random.choice(VideoFile.Quality.choices)[0]))
 
             if len(butch_video_files) >= 2000:
                 VideoFile.objects.bulk_create(butch_video_files)
