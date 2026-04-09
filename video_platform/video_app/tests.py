@@ -177,14 +177,16 @@ class AnotherVideoTestCase(APITestCase):
         self.video_likes = Video.objects.all().values_list('total_likes', flat=True)
 
     def test_check_ids(self) -> None:
-        response = self.client.get('/v1/videos/ids/')
+        with self.assertNumQueries(1):
+            response = self.client.get('/v1/videos/ids/')
 
         self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
 
     def test_check_statistics_subquery(self) -> None:
         fields_name = {'id', 'likes_count'}
-        response = self.client.get('/v1/videos/statistics-subquery/')
+        with self.assertNumQueries(1):
+            response = self.client.get('/v1/videos/statistics-subquery/')
         likes = list(map(lambda stat: stat['likes_count'] if stat['likes_count'] else 0, response.data))
 
         data_fields = list(map(lambda video: set(video.keys()), response.data))
@@ -197,7 +199,8 @@ class AnotherVideoTestCase(APITestCase):
 
     def test_check_statistics_group_by(self) -> None:
         fields_name = {'id', 'total_likes'}
-        response = self.client.get('/v1/videos/statistics-group-by/')
+        with self.assertNumQueries(1):
+            response = self.client.get('/v1/videos/statistics-group-by/')
 
         data_fields = list(map(lambda video: set(video.keys()), response.data))
 
