@@ -13,9 +13,13 @@ from .permissions import PublishedOrOwnerPermission
 
 
 class VideoViewSet(ReadOnlyModelViewSet):
-    queryset = Video.objects.select_related('owner')
     serializer_class = VideoModelSerializer
     permission_classes = [PublishedOrOwnerPermission, ]
+
+    def get_queryset(self):
+        if self.action == 'list':
+            return Video.objects.select_related('owner').filter(is_published=True)
+        return Video.objects.select_related('owner')
 
     def retrieve(self, request, *args, **kwargs):
         video = self.get_object()

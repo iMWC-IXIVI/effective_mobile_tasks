@@ -39,7 +39,7 @@ class VideoTestCase(APITestCase):
             videos = response.data
 
         self.assertEqual(response.status_code, HTTP_200_OK)
-        self.assertEqual(len(videos), 2)
+        self.assertEqual(len(videos), 1)
 
         for video in videos:
             self.assertEqual(set(video.keys()), name_fields)
