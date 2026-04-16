@@ -56,6 +56,8 @@ def get_url_next_page(response: str) -> Optional[str]:
 
 
 async def main(url: str) -> None:
+    """Перенести в main.py TODO"""
+
     async with aiohttp.ClientSession(headers=settings.HEADERS) as session:
         while url:
             response = await get_page(session, url)
