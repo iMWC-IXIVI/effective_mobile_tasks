@@ -3,6 +3,7 @@
 .env
 parser_spimex/files/
 video_platform/media/
+async_task/app/src
 
 # PYTHON
 
