@@ -7,6 +7,8 @@ from typing import Callable, Any
 
 
 def timer(func: Callable) -> Callable:
+    """Измерение времени выполнения функции"""
+
     @wraps(func)
     async def wrapper(*args, **kwargs) -> Any:
         start_time = time.perf_counter()
