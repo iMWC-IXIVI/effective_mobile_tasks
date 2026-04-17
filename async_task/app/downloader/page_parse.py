@@ -1,5 +1,3 @@
-import random
-import asyncio
 import aiohttp
 
 from typing import Iterator, Optional
@@ -7,8 +5,6 @@ from typing import Iterator, Optional
 from bs4 import BeautifulSoup
 
 from core import settings
-
-from download_files import download_file
 
 
 async def get_page(session: aiohttp.ClientSession, url: str) -> str:
@@ -53,24 +49,3 @@ def get_url_next_page(response: str) -> Optional[str]:
         return None
 
     return settings.SPIMEX_BASE_URL + href.get('href')
-
-
-async def main(url: str) -> None:
-    """Перенести в main.py TODO"""
-
-    async with aiohttp.ClientSession(headers=settings.HEADERS) as session:
-        while url:
-            response = await get_page(session, url)
-
-            data = get_urls_and_names_files(response)
-
-            tasks = [download_file(link, file_name, session) for link, file_name in data]
-
-            await asyncio.gather(*tasks)
-            await asyncio.sleep(random.uniform(2, 4))
-
-            url = get_url_next_page(response)
-
-
-if __name__ == '__main__':
-    asyncio.run(main(settings.SPIMEX_LIST))
