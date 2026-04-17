@@ -7,18 +7,25 @@ from datetime import datetime
 
 from typing import AsyncGenerator
 
-from core import settings
+from core import settings, setup_logger
 from downloader import get_page, get_urls_and_names_files, download_file, get_url_next_page
 from parser import read_table, parse_data_frame, ValidateData
 from database import save_data
+from utils.decorators import timer
 
 
+setup_logger()
+
+
+@timer
 async def crawl_and_download(url: str) -> None:
     """Обход всех страниц и скачивание файлов асинхронно"""
 
     async with aiohttp.ClientSession(headers=settings.HEADERS) as session:
         while url:
             try:
+                logging.info(f'url, откуда скачиваются все файлы - {url}')
+
                 response = await get_page(session, url)
 
                 datas = get_urls_and_names_files(response)
@@ -53,6 +60,7 @@ async def read_and_parse() -> AsyncGenerator[list[ValidateData], None]:
                 logging.error(f'Ошибка в прочтении или создании дата класса - {e}')
 
 
+@timer
 async def save_from_data_class() -> None:
     """Сохранение данных в БД"""
 
@@ -76,6 +84,7 @@ async def save_from_data_class() -> None:
         await asyncio.gather(*tasks)
 
 
+@timer
 async def main():
     await crawl_and_download(settings.SPIMEX_LIST)
     await save_from_data_class()

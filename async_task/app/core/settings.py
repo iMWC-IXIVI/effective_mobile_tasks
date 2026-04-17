@@ -1,3 +1,5 @@
+import sys
+import logging
 import asyncio
 
 from pathlib import Path
@@ -49,6 +51,22 @@ class Settings(BaseSettings):
         if not self.DOWNLOAD_DIR.exists():
             self.DOWNLOAD_DIR.mkdir()
         return self
+
+
+def setup_logger() -> None:
+    """Настройка логирования"""
+
+    formatter = logging.Formatter(
+        fmt='%(asctime)s | %(name)s (%(levelname)s) - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    logger.addHandler(handler)
 
 
 settings = Settings()
