@@ -10,6 +10,7 @@ from typing import AsyncGenerator
 from core import settings
 from downloader import get_page, get_urls_and_names_files, download_file, get_url_next_page
 from parser import read_table, parse_data_frame, ValidateData
+from database import save_data
 
 
 async def crawl_and_download(url: str) -> None:
@@ -52,8 +53,25 @@ async def read_and_parse() -> AsyncGenerator[list[ValidateData], None]:
                 logging.error(f'Ошибка в прочтении или создании дата класса - {e}')
 
 
+async def save_from_data_class() -> None:
+    """Сохранение данных в БД"""
+
+    async def save_one(data):
+        """Применение семафора к задачам"""
+        try:
+            async with settings.DATABASE_SEMAPHORE:
+                await save_data(data)
+        except Exception as e:
+            logging.error(f'Во время формирования задачи произошла ошибка - {e}')
+
+    tasks = [save_one(data) async for data in read_and_parse()]
+
+    await asyncio.gather(*tasks)
+
+
 async def main():
     await crawl_and_download(settings.SPIMEX_LIST)
+    await save_from_data_class()
 
 
 if __name__ == '__main__':
