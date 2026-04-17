@@ -24,7 +24,7 @@ class ValidateData(BaseModel):
     counter: Optional[int] = Field(alias='Количество сделок шт.')
 
     model_config = ConfigDict(
-        extra='ignore',
+        from_attributes=True,
         str_strip_whitespace=True
     )
 
