@@ -10,7 +10,7 @@ from core import settings
 def get_page(url: str) -> str:
     """Получение страницы сайта"""
 
-    with requests.get(url) as response:
+    with requests.get(url, headers=settings.HEADERS) as response:
         response.raise_for_status()
         return response.text
 
