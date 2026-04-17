@@ -4,7 +4,7 @@ from typing import Optional
 
 from datetime import datetime
 
-from model_validate import ValidateData
+from .model_validate import ValidateData
 from core import settings
 
 
@@ -67,21 +67,3 @@ def parse_data_frame(df: pd.DataFrame) -> list[ValidateData]:
     """Валидация данных из таблиц"""
 
     return [ValidateData(**row.to_dict()) for _, row in df.iterrows()]
-
-
-def main():
-    """Перенести в main.py TODO"""
-
-    files_list = settings.DOWNLOAD_DIR.glob('*.xls')
-    range_dates = [datetime(year=2019, month=1, day=1).date(), datetime(year=2026, month=1, day=1).date()]
-
-    result_data = []
-    for file_path in files_list:
-        date_name = datetime.strptime(file_path.stem, '%d.%m.%Y')
-        if range_dates[0] <= date_name.date() < range_dates[1]:
-            df = read_table(file_path)
-            result_data.extend(parse_data_frame(df))
-
-
-if __name__ == '__main__':
-    main()
