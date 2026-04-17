@@ -34,7 +34,7 @@ class Settings(BaseSettings):
         'cache-control': 'max-age=0',
     }
 
-    DATABASE_URL: str
+    SYNC_DATABASE_URL: str
 
     model_config = SettingsConfigDict(
         env_file=Path(__file__).resolve().parent.parent.parent/'.env',
