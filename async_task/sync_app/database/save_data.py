@@ -1,10 +1,10 @@
-# from parser.model_validate import ValidateData TODO list[ValidateData]
+from parser.model_validate import ValidateData
 
 from .core import SessionLocal
 from .models import Spimex
 
 
-def save_data(datas: list) -> None:
+def save_data(datas: list[ValidateData]) -> None:
     """Сохранение данных в БД"""
 
     with SessionLocal() as session:
