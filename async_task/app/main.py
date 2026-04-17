@@ -56,17 +56,24 @@ async def read_and_parse() -> AsyncGenerator[list[ValidateData], None]:
 async def save_from_data_class() -> None:
     """Сохранение данных в БД"""
 
-    async def save_one(data):
+    async def save_one(datas):
         """Применение семафора к задачам"""
         try:
             async with settings.DATABASE_SEMAPHORE:
-                await save_data(data)
+                await save_data(datas)
         except Exception as e:
             logging.error(f'Во время формирования задачи произошла ошибка - {e}')
 
-    tasks = [save_one(data) async for data in read_and_parse()]
+    tasks = []
+    async for data in read_and_parse():
+        tasks.append(asyncio.create_task(save_one(data)))
 
-    await asyncio.gather(*tasks)
+        if len(tasks) == 10:
+            await asyncio.gather(*tasks)
+            tasks.clear()
+
+    if tasks:
+        await asyncio.gather(*tasks)
 
 
 async def main():
