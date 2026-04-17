@@ -78,6 +78,9 @@ async def save_from_data_class() -> None:
 
         if len(tasks) == 10:
             await asyncio.gather(*tasks)
+
+            logging.info(f'{len(tasks)} задач запущено')
+
             tasks.clear()
 
     if tasks:
