@@ -2,12 +2,16 @@
 
 * __Клонирование проекта__ - ```git clone https://github.com/iMWC-IXIVI/effective_mobile_tasks/tree/main/async_task```
 * __Необходимо перейти в директорию с проектом__ - ```cd async_task```
-* __Создание необходимых папок__ - ```mkdir app\src```
 * __Копирование .env файла (необходимо настроить)__ - ```copy .env_example .env - НАСТРОИТЬ .env```
 * __Создание виртуального окружения__ - ```python -m venv venv```
 * __Активация виртуального окружения__ - ```venv\Scripts\activate```
 * __Загрузка необходимых зависимостей__ - ```pip install -r req.txt```
-* __Запуск docker compose__ - ```docker compose up --build```
+* __Запуск скрипты run.py__ - ```python run.py --mode sync``` __Есть 2 значения для --mode (sync и async), по умолчанию async__
+
+### Docker compose commands
+* __Запуск docker compose в режиме async__ - ```docker compose up app database --build```
+* __Запуск docker compose в режиме sync__ - ```docker compose up app_sync database --build```
+* __очистка данных__ - ```docker compose down --volume```
 
 ### PSS
 __Если запускаем не для разработки, можно пропустить от пункта "Создание виртуального окружения" до, включительно "Загрузка необходимых зависимостей"__
