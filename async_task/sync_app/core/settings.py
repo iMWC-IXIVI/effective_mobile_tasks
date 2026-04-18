@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
     PREFIX_FILE: str = '.xls'
 
+    MAXIMUM_RETRIES: int = 10
+
     HEADERS: dict = {
         'sec-ch-ua': '"Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"',
         'sec-ch-ua-mobile': '?1',

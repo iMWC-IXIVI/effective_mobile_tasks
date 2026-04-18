@@ -20,7 +20,13 @@ setup_logger()
 def crawl_and_download(url: str) -> None:
     """Обход всех страниц и скачивание файлов синхронно"""
 
+    retries = 0
+
     while url:
+        if retries >= settings.MAXIMUM_RETRIES:
+            logging.warning(f'Невозможно установить соединение, url - {url}')
+            return
+
         try:
             logging.info(f'url, откуда скачиваются все файлы - {url}')
 
@@ -38,6 +44,7 @@ def crawl_and_download(url: str) -> None:
         except Exception as e:
             logging.error(f'Произошла ошибка по {url} - {e}')
             logging.info(f'Перезапуск функции через 10 секунд')
+            retries += 1
             time.sleep(10)
 
 

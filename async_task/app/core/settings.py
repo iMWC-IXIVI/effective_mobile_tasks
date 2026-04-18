@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
     PREFIX_FILE: str = '.xls'
 
+    MAXIMUM_RETRIES: int = 10
+
     DATABASE_SEMAPHORE: asyncio.Semaphore = asyncio.Semaphore(10)
     SEMAPHORE: asyncio.Semaphore = asyncio.Semaphore(3)
 
