@@ -5,6 +5,8 @@ parser_spimex/files/
 video_platform/media/
 async_task/app/src
 async_task/sync_app/src
+async_task/app/logs
+async_task/sync_app/logs
 
 # PYTHON
 

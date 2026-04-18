@@ -1,7 +1,8 @@
 import sys
 import logging
-import asyncio
+import datetime
 
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from pydantic import model_validator
@@ -11,6 +12,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
     DOWNLOAD_DIR: Path = BASE_DIR/'src'
+    LOGS_DIR: Path = BASE_DIR/'logs'
 
     SPIMEX_BASE_URL: str = 'https://spimex.com'
     SPIMEX_LIST: str = SPIMEX_BASE_URL + '/markets/oil_products/trades/results/'
@@ -44,28 +46,50 @@ class Settings(BaseSettings):
     )
 
     @model_validator(mode='after')
-    def _check_or_create(self) -> 'Settings':
-        """Проверка и создание папки src в базовой дирректории проекта"""
+    def _check_or_create_src(self) -> 'Settings':
+        """Проверка и создание папки src в базовой директории проекта"""
 
         if not self.DOWNLOAD_DIR.exists():
             self.DOWNLOAD_DIR.mkdir()
+        return self
+
+    @model_validator(mode='after')
+    def _check_or_create_logs(self) -> 'Settings':
+        """Проверка и создание папки logs в базовой директории проекта"""
+        if not self.LOGS_DIR.exists():
+            self.LOGS_DIR.mkdir()
         return self
 
 
 def setup_logger() -> None:
     """Настройка логирования"""
 
-    formatter = logging.Formatter(
+    filename = datetime.datetime.now().strftime('%d-%m-%Y') + '.log'
+    filepath = settings.LOGS_DIR/filename
+
+    console_formatter = logging.Formatter(
         fmt='%(asctime)s | %(name)s (%(levelname)s) - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
+    file_formatter = logging.Formatter(
+        fmt='%(asctime)s | %(pathname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
 
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(formatter)
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(console_formatter)
+    console_handler.setLevel(logging.INFO)
+
+    file_handler = RotatingFileHandler(filename=filepath, mode='a', encoding='utf-8', maxBytes=10 * 1024 * 1024, backupCount=10)
+    file_handler.setFormatter(file_formatter)
+    file_handler.setLevel(logging.ERROR)
 
     logger = logging.getLogger()
+
     logger.setLevel(logging.INFO)
-    logger.addHandler(handler)
+
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
 
 
 settings = Settings()
