@@ -19,29 +19,29 @@ def test_parse_page(get_html) -> None:
 
     len_data = len(data)
     filenames = [
-        '05.09.2025.xls',
-        '08.09.2025.xls',
-        '09.09.2025.xls',
-        '10.09.2025.xls',
-        '11.09.2025.xls',
-        '12.09.2025.xls',
-        '15.09.2025.xls',
-        '16.09.2025.xls',
-        '17.09.2025.xls',
-        '18.09.2025.xls'
+        '04.09.2025.xls',
+        '03.09.2025.xls',
+        '02.09.2025.xls',
+        '01.09.2025.xls',
+        '29.08.2025.xls',
+        '28.08.2025.xls',
+        '27.08.2025.xls',
+        '26.08.2025.xls',
+        '25.08.2025.xls',
+        '22.08.2025.xls'
     ]
 
     assert len_data == 10
 
     for href, filename in data:
-        assert href.startswith('https://spimex.comhttps://spimex.com/files/trades/result/oil_xls/') is True
+        assert href.startswith('https://spimex.com/files/trades/result/oil_xls/')
         assert filename in filenames
 
 
 def test_get_next_page(get_html) -> None:
     """Проверка get_url_next_page"""
 
-    href_fixture = 'https://spimex.comhttps://spimex.com/markets/oil_products/trades/results/?page=page-16'
+    href_fixture = 'https://spimex.com/markets/oil_products/trades/results/?page=page-17'
 
     href = get_url_next_page(get_html)
 
