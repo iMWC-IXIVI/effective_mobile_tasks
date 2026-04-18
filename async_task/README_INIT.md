@@ -11,7 +11,7 @@
 ### Docker compose commands
 * __Запуск docker compose в режиме async__ - ```docker compose up app database --build```
 * __Запуск docker compose в режиме sync__ - ```docker compose up app_sync database --build```
-* __очистка данных__ - ```docker compose down --volume```
+* __Очистка данных__ - ```docker compose down --volume```
 
 ### PSS
 __Если запускаем не для разработки, можно пропустить от пункта "Создание виртуального окружения" до, включительно "Загрузка необходимых зависимостей"__
