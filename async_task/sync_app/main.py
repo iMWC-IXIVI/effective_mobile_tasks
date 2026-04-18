@@ -41,7 +41,7 @@ def crawl_and_download(url: str) -> None:
             time.sleep(10)
 
 
-def read_and_parse() -> Generator[list[ValidateData], None]:
+def read_and_parse() -> Generator[list[ValidateData], None, None]:
     """Чтение файлов и создание дата классов для будущего сохранения"""
 
     files_list = settings.DOWNLOAD_DIR.glob('*.xls')
