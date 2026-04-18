@@ -1,4 +1,5 @@
 import pytest
+import pathlib
 
 from downloader import get_urls_and_names_files, get_url_next_page
 
@@ -6,7 +7,9 @@ from downloader import get_urls_and_names_files, get_url_next_page
 @pytest.fixture()
 def get_html():
     """Загрузка html страницы"""
-    with open('fixtures/spimex_test.html', 'r', encoding='utf-8') as html_file:
+    filepath = pathlib.Path(__file__).parent/'fixtures'/'spimex_test.html'
+
+    with open(filepath, 'r', encoding='utf-8') as html_file:
         html = html_file.read()
 
     return html
