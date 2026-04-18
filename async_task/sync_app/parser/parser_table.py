@@ -2,10 +2,7 @@ import pandas as pd
 
 from typing import Optional
 
-from datetime import datetime
-
 from .model_validate import ValidateData
-from core import settings
 
 
 pd.set_option('display.max_columns', None)
