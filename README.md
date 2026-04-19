@@ -15,5 +15,9 @@
 
 # Практика по теме №3 - Django
 
-* ### [Articles](./article_app)
+* ### [Articles](./article_app/)
 * ### [Video Platform](./video_platform/)
+
+# Практика по теме №4 - Asyncio
+
+* ### [SPIMEX ASYNC](./async_task/)
