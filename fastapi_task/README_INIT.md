@@ -8,3 +8,9 @@
 * __Установка зависимостей__ - ```pip install -r req.txt```
 * __Перейти в директорию с приложением__ - ```cd app```
 * __Запуск сервера__ - ```uvicorn main:app --reload```
+
+## Docker compose
+
+* __Запуск контейнеров__ - ```docker compose up --build```
+* __Очистка volume__ - ```docker compose down --volumes```
+* __Подключение к контейнеру__ - ```docker exec -it <container_name> <command>```
