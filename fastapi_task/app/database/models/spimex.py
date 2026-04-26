@@ -38,3 +38,16 @@ class SpimexResults(Base):
             if value < 0:
                 raise ValueError('Значение "количества сделок" не может быть меньше нуля')
         return value
+
+    def to_dict(self) -> dict:
+        """Возвращение dict экземпляра"""
+        return {
+            'id': self.id,
+            'date': self.date,
+            'oil_id': self.oil_id,
+            'delivery_type_id': self.delivery_type_id,
+            'delivery_basis_id': self.delivery_basis_id,
+            'volume': self.volume,
+            'total': self.total,
+            'count': self.count
+        }
