@@ -30,7 +30,7 @@ async def get_last_trading_dates(
     if last_days <= 0:
         return []
 
-    query = select(SpimexResults.date).limit(last_days)
+    query = select(SpimexResults.date).order_by(SpimexResults.date.desc()).limit(last_days)
     db_result = await session.execute(query)
     result = [DateSchema(date=dt) for dt in db_result.scalars().all()]
 
@@ -81,7 +81,7 @@ async def get_trading_results(
 ) -> list[SpimexSchema]:
     """Возвращение списка последних торгов с фильтрацией"""
 
-    query = select(SpimexResults).limit(limit)
+    query = select(SpimexResults)
 
     if oil_id:
         query = query.where(SpimexResults.oil_id == oil_id)
@@ -90,9 +90,9 @@ async def get_trading_results(
     if delivery_basis_id:
         query = query.where(SpimexResults.delivery_basis_id == delivery_basis_id)
 
+    query = query.order_by(SpimexResults.date.desc()).limit(limit)
+
     db_result = await session.execute(query)
     result = db_result.scalars().all()
 
     return result
-
-# TODO посмотреть в сторону "ПОСЛЕДНИХ ТОРГОВ ПО ДНЯМ" сортировка везде относительно сегодняшнего дня!!!!!
