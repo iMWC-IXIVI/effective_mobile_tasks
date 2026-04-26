@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Optional
 
 from sqlalchemy import UUID, Date, String, DECIMAL, Integer
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from database.core import Base
 
@@ -29,3 +29,10 @@ class SpimexResults(Base):
 
     def __str__(self) -> str:
         return f'id={self.id}, oil_id={self.oil_id}'
+
+    @validates('count')
+    def validate_count(self, _, value: Optional[int]) -> Optional[int]:
+        if value is not None:
+            if value < 0:
+                raise ValueError('Значение "количества сделок" не может быть меньше нуля')
+        return value
