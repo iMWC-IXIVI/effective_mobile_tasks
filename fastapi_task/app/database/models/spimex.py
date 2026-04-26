@@ -16,10 +16,10 @@ class SpimexResults(Base):
     __tablename__ = 'spimex_trading_results'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4, comment='Уникальный идентификатор UUID')
-    date: Mapped[date] = mapped_column(Date, default=date.today(), comment='Дата торгов')
-    oil_id: Mapped[str] = mapped_column(String(50), comment='Идентификатор нефтяного продукта')
-    delivery_type_id: Mapped[str] = mapped_column(String(255), comment='Тип поставки')
-    delivery_basis_id: Mapped[str] = mapped_column(String(255), comment='Базис поставки')
+    date: Mapped[date] = mapped_column(Date, default=date.today(), index=True, comment='Дата торгов')
+    oil_id: Mapped[str] = mapped_column(String(50), index=True, comment='Идентификатор нефтяного продукта')
+    delivery_type_id: Mapped[str] = mapped_column(String(255), index=True, comment='Тип поставки')
+    delivery_basis_id: Mapped[str] = mapped_column(String(255), index=True, comment='Базис поставки')
     volume: Mapped[Optional[Decimal]] = mapped_column(DECIMAL(18, 6), comment='Объем торгов')
     total: Mapped[Optional[Decimal]] = mapped_column(DECIMAL(18, 6), comment='Общая сумма')
     count: Mapped[Optional[int]] = mapped_column(Integer, comment='Количество сделок')
@@ -32,6 +32,8 @@ class SpimexResults(Base):
 
     @validates('count')
     def validate_count(self, _, value: Optional[int]) -> Optional[int]:
+        """Валидация поля count на отрицательное число"""
+
         if value is not None:
             if value < 0:
                 raise ValueError('Значение "количества сделок" не может быть меньше нуля')
