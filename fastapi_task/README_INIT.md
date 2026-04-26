@@ -14,3 +14,6 @@
 * __Запуск контейнеров__ - ```docker compose up --build```
 * __Очистка volume__ - ```docker compose down --volumes```
 * __Подключение к контейнеру__ - ```docker exec -it <container_name> <command>```
+* __Создание миграций__ - ```docker exec -it fastapi_backend alembic revision --autogenerate```
+* __Применение миграций__ - ```docker exec -it fastapi_backend alembic upgrade head```
+* __Откат миграции__ - ```docker exec -it fastapi_backend alembic downgrade -1```

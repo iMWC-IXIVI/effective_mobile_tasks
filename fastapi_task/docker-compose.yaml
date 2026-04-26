@@ -14,7 +14,7 @@ services:
       - ./app:/usr/src/app
     ports:
       - "${FASTAPI_PORT_LOCAL}:${FASTAPI_PORT}"
-    command: sh -c "uvicorn main:app --host ${FASTAPI_HOST} --port ${FASTAPI_PORT} --reload"
+    command: sh -c "alembic upgrade head && uvicorn main:app --host ${FASTAPI_HOST} --port ${FASTAPI_PORT} --reload"
     restart: unless-stopped
     networks:
       - dev
