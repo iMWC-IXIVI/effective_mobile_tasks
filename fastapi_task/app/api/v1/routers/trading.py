@@ -1,6 +1,6 @@
 from datetime import date
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -65,3 +65,34 @@ async def get_dynamics(
     result = db_result.scalars().all()
 
     return result
+
+
+@trading_router.get(
+    '/results',
+    summary='Список последни торгов',
+    description='Возвращает список последних торгов с возможностью фильтрации по характеристикам продукта'
+)
+async def get_trading_results(
+        oil_id: str = None,
+        delivery_type_id: str = None,
+        delivery_basis_id: str = None,
+        limit: int = Query(100, ge=100, le=1000),
+        session: AsyncSession = Depends(get_connection)
+) -> list[SpimexSchema]:
+    """Возвращение списка последних торгов с фильтрацией"""
+
+    query = select(SpimexResults).limit(limit)
+
+    if oil_id:
+        query = query.where(SpimexResults.oil_id == oil_id)
+    if delivery_type_id:
+        query = query.where(SpimexResults.delivery_type_id == delivery_type_id)
+    if delivery_basis_id:
+        query = query.where(SpimexResults.delivery_basis_id == delivery_basis_id)
+
+    db_result = await session.execute(query)
+    result = db_result.scalars().all()
+
+    return result
+
+# TODO посмотреть в сторону "ПОСЛЕДНИХ ТОРГОВ ПО ДНЯМ" сортировка везде относительно сегодняшнего дня!!!!!
