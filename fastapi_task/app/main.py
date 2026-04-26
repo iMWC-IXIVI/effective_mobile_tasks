@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from core import lifespan
 from utils import include_routers
 from api.v1 import test_router, trading_router
 
@@ -7,7 +8,8 @@ from api.v1 import test_router, trading_router
 app = FastAPI(
     title='Микросервис для торговых данных',
     version='0.0.1',
-    description='Получение данных из сайта SPIMEX'
+    description='Получение данных из сайта SPIMEX',
+    lifespan=lifespan
 )
 
 routers = [test_router, trading_router]
