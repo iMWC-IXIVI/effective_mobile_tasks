@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 
+from prometheus_fastapi_instrumentator import Instrumentator
+
 from core import lifespan
 from utils import include_routers
 from api.v1 import test_router, trading_router
@@ -14,3 +16,6 @@ app = FastAPI(
 
 routers = [test_router, trading_router]
 include_routers(app, routers)
+
+instrumentator = Instrumentator()
+instrumentator.instrument(app).expose(app)
