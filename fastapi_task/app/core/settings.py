@@ -67,7 +67,7 @@ class Settings(BaseSettings):
         if not self._redis_client:
             return
 
-        await self._redis_client.close()
+        await self._redis_client.aclose()
         self._redis_client = None
 
 
