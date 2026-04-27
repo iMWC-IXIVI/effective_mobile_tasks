@@ -1,5 +1,9 @@
+import logging
+import sys
 import redis.asyncio as redis
 
+from datetime import datetime
+from logging.handlers import RotatingFileHandler
 from contextlib import asynccontextmanager
 from typing import Optional
 from pathlib import Path
@@ -7,6 +11,7 @@ from pathlib import Path
 from fastapi import FastAPI, status
 from fastapi.exceptions import HTTPException
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -17,6 +22,7 @@ class Settings(BaseSettings):
     """Настройки проекта"""
 
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
+    LOG_DIR: Path = BASE_DIR/'logs'
 
     DATABASE_URL: str
     REDIS_URL: str
@@ -29,6 +35,14 @@ class Settings(BaseSettings):
         env_file=BASE_DIR.parent/'.env',
         extra='ignore'
     )
+
+    @model_validator(mode='after')
+    def _check_or_create_logs(self) -> 'Settings':
+        """Проверка и создание папки logs"""
+
+        if not self.LOG_DIR.exists():
+            self.LOG_DIR.mkdir()
+        return self
 
     @property
     def redis(self) -> redis.Redis:
@@ -57,13 +71,11 @@ class Settings(BaseSettings):
         self._redis_client = None
 
 
-settings = Settings()
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Контроль запуска/завершения fastapi приложение"""
 
+    setup_logger()
     await settings.initialize_redis()
     settings.SCHEDULER.add_job(
         delete_data_from_redis,
@@ -97,3 +109,35 @@ async def delete_data_from_redis() -> None:
         await async_redis.flushdb()
     except RuntimeError:
         print()  # TODO добавить логирование
+
+
+def setup_logger() -> None:
+    filename = datetime.now().strftime('%d-%m-%Y') + '.log'
+    filepath = settings.LOG_DIR/filename
+
+    console_formatter = logging.Formatter(
+        fmt='%(asctime)s | %(name)s (%(levelname)s) - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    file_formatter = logging.Formatter(
+        fmt='%(asctime)s | %(pathname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(console_formatter)
+
+    file_handler = RotatingFileHandler(filename=filepath, mode='a', encoding='utf-8', maxBytes=10*1024*1024, backupCount=10)
+    file_handler.setLevel(logging.ERROR)
+    file_handler.setFormatter(file_formatter)
+
+    logger = logging.getLogger()
+
+    logger.setLevel(logging.INFO)
+
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+
+
+settings = Settings()
