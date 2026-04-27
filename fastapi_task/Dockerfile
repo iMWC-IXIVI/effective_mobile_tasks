@@ -12,6 +12,7 @@ COPY ./app ./
 CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host ${FASTAPI_HOST} --port ${FASTAPI_PORT} --reload"]
 
 
+ENV TZ=Europe/Moscow
 ENV PYTHONPATH /usr/src/app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1

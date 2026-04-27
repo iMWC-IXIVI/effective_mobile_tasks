@@ -9,6 +9,9 @@ from fastapi.exceptions import HTTPException
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+
 
 class Settings(BaseSettings):
     """Настройки проекта"""
@@ -17,6 +20,8 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str
     REDIS_URL: str
+
+    SCHEDULER: AsyncIOScheduler = AsyncIOScheduler()
 
     _redis_client: Optional[redis.Redis] = None
 
@@ -60,9 +65,18 @@ async def lifespan(app: FastAPI):
     """Контроль запуска/завершения fastapi приложение"""
 
     await settings.initialize_redis()
+    settings.SCHEDULER.add_job(
+        delete_data_from_redis,
+        trigger=CronTrigger(hour=14, minute=11),
+        name='delete_data_from_redis',
+        misfire_grace_time=60*60,
+        coalesce=True
+    )
+    settings.SCHEDULER.start()
 
     yield
 
+    settings.SCHEDULER.shutdown()
     await settings.close_redis_connect()
 
 
@@ -73,3 +87,13 @@ async def get_redis() -> redis.Redis:
         return settings.redis
     except RuntimeError:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, detail='Redis не инициализирован')
+
+
+async def delete_data_from_redis() -> None:
+    """Задача для очистки данных из редиса"""
+
+    try:
+        async_redis = settings.redis
+        await async_redis.flushdb()
+    except RuntimeError:
+        print()  # TODO добавить логирование
