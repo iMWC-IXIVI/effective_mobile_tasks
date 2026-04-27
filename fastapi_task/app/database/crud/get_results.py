@@ -1,3 +1,4 @@
+import logging
 import redis.asyncio as redis
 import json
 import hashlib
@@ -12,6 +13,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core import get_redis
 from database.core import get_connection
 from database.models import SpimexResults
+
+
+logger = logging.getLogger(__name__)
 
 
 async def get_hash_params(
@@ -49,11 +53,15 @@ async def get_results(
     cache = await async_redis.get(cache_name)
 
     if cache is None:
+        logger.info(f'CACHE MISSES данные не найдены в redis - {cache_name}')
+
         result = await get_db_results(oil_id, delivery_type_id, delivery_basis_id, limit, session)
         cache_data = json.dumps([item.to_dict() for item in result], default=str)
 
         await async_redis.set(cache_name, cache_data)
     else:
+        logger.info(f'CACHE HITS данные найдены в redis - {cache_name}')
+
         cache_data = json.loads(cache)
         result = [SpimexResults(**item) for item in cache_data]
 

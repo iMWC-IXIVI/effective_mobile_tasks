@@ -1,3 +1,4 @@
+import logging
 import json
 import redis.asyncio as redis
 
@@ -12,6 +13,9 @@ from database.models import SpimexResults
 from database.schemas import DateSchema
 
 
+logger = logging.getLogger(__name__)
+
+
 async def get_dates(
         last_days: int = 30,
         session: AsyncSession = Depends(get_connection),
@@ -23,11 +27,15 @@ async def get_dates(
     cache = await async_redis.get(cache_name)
 
     if cache is None:
+        logger.info(f'CACHE MISSES данные не найдены в redis - {cache_name}')
+
         result = await get_db_dates(last_days, session)
         cache_data = json.dumps([data.model_dump() for data in result], default=str)
 
         await async_redis.set(cache_name, cache_data)
     else:
+        logger.info(f'CACHE HITS данные найдены в redis - {cache_name}')
+
         cache_data = json.loads(cache)
         result = [DateSchema(**item) for item in cache_data]
 

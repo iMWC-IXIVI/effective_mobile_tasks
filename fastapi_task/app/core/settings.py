@@ -75,21 +75,21 @@ class Settings(BaseSettings):
 async def lifespan(app: FastAPI):
     """Контроль запуска/завершения fastapi приложение"""
 
-    setup_logger()
-    await settings.initialize_redis()
+    setup_logger()  # Настройка логирования
+    await settings.initialize_redis()  # Инициализация Redis'a
     settings.SCHEDULER.add_job(
         delete_data_from_redis,
         trigger=CronTrigger(hour=14, minute=11),
         name='delete_data_from_redis',
         misfire_grace_time=60*60,
         coalesce=True
-    )
-    settings.SCHEDULER.start()
+    )  # Создание задачи на очистку данных
+    settings.SCHEDULER.start()  # Запуск задачи
 
     yield
 
-    settings.SCHEDULER.shutdown()
-    await settings.close_redis_connect()
+    settings.SCHEDULER.shutdown()  # Отключение задачи
+    await settings.close_redis_connect()  # Закрытие redis соединения
 
 
 async def get_redis() -> redis.Redis:
@@ -97,7 +97,8 @@ async def get_redis() -> redis.Redis:
 
     try:
         return settings.redis
-    except RuntimeError:
+    except RuntimeError as e:
+        logging.error(f'Во время получения зависимости произошло исключение - {e}')
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, detail='Redis не инициализирован')
 
 
@@ -107,8 +108,8 @@ async def delete_data_from_redis() -> None:
     try:
         async_redis = settings.redis
         await async_redis.flushdb()
-    except RuntimeError:
-        print()  # TODO добавить логирование
+    except RuntimeError as e:
+        logging.error(f'Произошла ошибка во время очистки данных - {e}')
 
 
 def setup_logger() -> None:

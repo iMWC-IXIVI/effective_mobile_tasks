@@ -7,6 +7,8 @@ from pydantic import BaseModel, ConfigDict
 
 
 class SpimexSchema(BaseModel):
+    """Схема для возвращения данных из бд SpimexResults"""
+
     id: uuid.UUID
     date: date
     oil_id: str

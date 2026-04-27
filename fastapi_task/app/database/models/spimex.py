@@ -41,6 +41,7 @@ class SpimexResults(Base):
 
     def to_dict(self) -> dict:
         """Возвращение dict экземпляра"""
+
         return {
             'id': self.id,
             'date': self.date,
