@@ -9,7 +9,7 @@ RUN pip3 install --upgrade pip && pip3 install --no-cache-dir -r ../req.txt
 
 COPY ./app ./
 
-CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host ${FASTAPI_HOST} --port ${FASTAPI_PORT} --reload"]
+CMD ["sh", "-c", "alembic upgrade head && gunicorn main:app -w ${COUNTER_WORKERS} -k uvicorn.workers.UvicornWorker -b ${FASTAPI_HOST}:${FASTAPI_PORT} --reload"]
 
 
 ENV TZ=Europe/Moscow
