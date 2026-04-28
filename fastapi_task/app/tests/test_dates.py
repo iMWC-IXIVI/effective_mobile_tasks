@@ -1,7 +1,6 @@
 import time
 import asyncio
 import httpx
-import pytest
 
 from database.crud import get_db_dates
 from database.schemas import DateSchema
@@ -10,7 +9,6 @@ from database.schemas import DateSchema
 base_url = '/api/v1/trading/dates'
 
 
-@pytest.mark.asyncio
 async def test_get_dates(client: httpx.AsyncClient) -> None:
     """Тестирование /api/v1/trading/dates"""
 
@@ -22,7 +20,6 @@ async def test_get_dates(client: httpx.AsyncClient) -> None:
     assert len(data) <= 30
 
 
-@pytest.mark.asyncio
 async def test_get_dates_broken(client: httpx.AsyncClient) -> None:
     """Тестирование put, post, patch, delete"""
 
@@ -39,7 +36,6 @@ async def test_get_dates_broken(client: httpx.AsyncClient) -> None:
     assert responses_data == [{'detail': 'Method Not Allowed'} for _ in range(4)]
 
 
-@pytest.mark.asyncio
 async def test_get_dates_last_days(client: httpx.AsyncClient) -> None:
     """Тестирование с флагом last_days"""
 
@@ -58,7 +54,6 @@ async def test_get_dates_last_days(client: httpx.AsyncClient) -> None:
     assert len(data2) == 0
 
 
-@pytest.mark.asyncio
 async def test_get_dates_cache(client: httpx.AsyncClient) -> None:
     """Тестирование на сохранение в кэш"""
 
@@ -75,7 +70,6 @@ async def test_get_dates_cache(client: httpx.AsyncClient) -> None:
     assert second_time <= first_time
 
 
-@pytest.mark.asyncio
 async def test_get_db_dates(get_session) -> None:
     """Получение данных из бд напрямую"""
 

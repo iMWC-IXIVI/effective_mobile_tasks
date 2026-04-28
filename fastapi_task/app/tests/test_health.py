@@ -1,12 +1,10 @@
 import asyncio
-import pytest
 import httpx
 
 
 base_url = '/api/v1/routers/test/ping'
 
 
-@pytest.mark.asyncio
 async def test_health_service(client: httpx.AsyncClient) -> None:
     """Тестирование /api/v1/routers/test/ping"""
 
@@ -16,7 +14,6 @@ async def test_health_service(client: httpx.AsyncClient) -> None:
     assert response.json() == {'message': 'pong'}
 
 
-@pytest.mark.asyncio
 async def test_health_service_broken(client: httpx.AsyncClient) -> None:
     """Тестирование различных методов"""
 

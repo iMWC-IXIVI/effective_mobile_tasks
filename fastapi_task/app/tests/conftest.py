@@ -10,7 +10,7 @@ from main import app
 from core import settings
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope='function')
 async def get_session():
     """Получение бд сессии"""
 
@@ -21,7 +21,7 @@ async def get_session():
         yield session
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope='function')
 async def client():
     """Асинхронный клиент для тестирования"""
 
