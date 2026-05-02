@@ -4,6 +4,7 @@ from database.crud import get_hash_params_results
 
 
 @pytest.mark.asyncio
+@pytest.mark.unit
 @pytest.mark.parametrize('oil_id, delivery_type_id, delivery_basis_id, limit', [
     ['AST', 'Street', 'st.100', 50],
     ['ASC', 'StreetFood', 'st.100', 50],
