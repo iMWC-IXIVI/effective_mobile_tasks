@@ -6,15 +6,35 @@ from pytest_mock import MockerFixture
 from datetime import date
 from decimal import Decimal
 
-from fastapi.testclient import TestClient
-
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
-from database.core import Base, get_connection
+from database.core import Base
 from database.models import SpimexResults
-from core import get_redis
-from main import app
 
+
+redis_data_dates_10 = '''
+[
+{"date": "2026-03-01", "oil_id": "AST_20", "delivery_type_id": "Street_50", "delivery_basis_id": "st.50", "volume": "10000", "total": "100000.54321", "count": 5}, 
+{"date": "2026-03-02", "oil_id": "AST_21", "delivery_type_id": "Street_51", "delivery_basis_id": "st.51", "volume": "10001", "total": "100001.54321", "count": 6}, 
+{"date": "2026-03-03", "oil_id": "AST_22", "delivery_type_id": "Street_52", "delivery_basis_id": "st.52", "volume": "10002", "total": "100002.54321", "count": 7}, 
+{"date": "2026-03-04", "oil_id": "AST_23", "delivery_type_id": "Street_53", "delivery_basis_id": "st.53", "volume": "10003", "total": "100003.54321", "count": 8}, 
+{"date": "2026-03-05", "oil_id": "AST_24", "delivery_type_id": "Street_54", "delivery_basis_id": "st.54", "volume": "10004", "total": "100004.54321", "count": 9}, 
+{"date": "2026-03-06", "oil_id": "AST_25", "delivery_type_id": "Street_55", "delivery_basis_id": "st.55", "volume": "10005", "total": "100005.54321", "count": 10}, 
+{"date": "2026-03-07", "oil_id": "AST_26", "delivery_type_id": "Street_56", "delivery_basis_id": "st.56", "volume": "10006", "total": "100006.54321", "count": 11}, 
+{"date": "2026-03-08", "oil_id": "AST_27", "delivery_type_id": "Street_57", "delivery_basis_id": "st.57", "volume": "10007", "total": "100007.54321", "count": 12}, 
+{"date": "2026-03-09", "oil_id": "AST_28", "delivery_type_id": "Street_58", "delivery_basis_id": "st.58", "volume": "10008", "total": "100008.54321", "count": 13}, 
+{"date": "2026-03-10", "oil_id": "AST_29", "delivery_type_id": "Street_59", "delivery_basis_id": "st.59", "volume": "10009", "total": "100009.54321", "count": 14}
+]
+'''
+redis_data_dates_5 = '''
+[
+{"date": "2026-03-01", "oil_id": "AST_20", "delivery_type_id": "Street_50", "delivery_basis_id": "st.50", "volume": "10000", "total": "100000.54321", "count": 5}, 
+{"date": "2026-03-02", "oil_id": "AST_21", "delivery_type_id": "Street_51", "delivery_basis_id": "st.51", "volume": "10001", "total": "100001.54321", "count": 6}, 
+{"date": "2026-03-03", "oil_id": "AST_22", "delivery_type_id": "Street_52", "delivery_basis_id": "st.52", "volume": "10002", "total": "100002.54321", "count": 7}, 
+{"date": "2026-03-04", "oil_id": "AST_23", "delivery_type_id": "Street_53", "delivery_basis_id": "st.53", "volume": "10003", "total": "100003.54321", "count": 8}, 
+{"date": "2026-03-05", "oil_id": "AST_24", "delivery_type_id": "Street_54", "delivery_basis_id": "st.54", "volume": "10004", "total": "100004.54321", "count": 9}
+]
+'''
 
 @pytest_asyncio.fixture(scope='session')
 async def get_sessionmaker():
@@ -84,23 +104,24 @@ def mock_redis_cache_miss(mocker: MockerFixture):
 
 
 @pytest.fixture(scope='function')
-def mock_redis_cache_hit(mocker: MockerFixture):
+def mock_redis_cache_dates_hit(mocker: MockerFixture):
     """Redis get возвращает не None"""
 
     mock = mocker.AsyncMock()
-    mock.get.return_value = '''
-    [
-    {"date": "2026-03-01", "oil_id": "AST_20", "delivery_type_id": "Street_50", "delivery_basis_id": "st.50", "volume": "10000", "total": "100000.54321", "count": 5}, 
-    {"date": "2026-03-02", "oil_id": "AST_21", "delivery_type_id": "Street_51", "delivery_basis_id": "st.51", "volume": "10001", "total": "100001.54321", "count": 6}, 
-    {"date": "2026-03-03", "oil_id": "AST_22", "delivery_type_id": "Street_52", "delivery_basis_id": "st.52", "volume": "10002", "total": "100002.54321", "count": 7}, 
-    {"date": "2026-03-04", "oil_id": "AST_23", "delivery_type_id": "Street_53", "delivery_basis_id": "st.53", "volume": "10003", "total": "100003.54321", "count": 8}, 
-    {"date": "2026-03-05", "oil_id": "AST_24", "delivery_type_id": "Street_54", "delivery_basis_id": "st.54", "volume": "10004", "total": "100004.54321", "count": 9}, 
-    {"date": "2026-03-06", "oil_id": "AST_25", "delivery_type_id": "Street_55", "delivery_basis_id": "st.55", "volume": "10005", "total": "100005.54321", "count": 10}, 
-    {"date": "2026-03-07", "oil_id": "AST_26", "delivery_type_id": "Street_56", "delivery_basis_id": "st.56", "volume": "10006", "total": "100006.54321", "count": 11}, 
-    {"date": "2026-03-08", "oil_id": "AST_27", "delivery_type_id": "Street_57", "delivery_basis_id": "st.57", "volume": "10007", "total": "100007.54321", "count": 12}, 
-    {"date": "2026-03-09", "oil_id": "AST_28", "delivery_type_id": "Street_58", "delivery_basis_id": "st.58", "volume": "10008", "total": "100008.54321", "count": 13}, 
-    {"date": "2026-03-10", "oil_id": "AST_29", "delivery_type_id": "Street_59", "delivery_basis_id": "st.59", "volume": "10009", "total": "100009.54321", "count": 14}]
-    '''
+    redis_key = 'trading:dates:last_days'
+
+    def dynamic_effect(key: str):
+        """Динамичное возвращение значение мока"""
+
+        if key == f'{redis_key}:30':
+            return redis_data_dates_10
+        elif key == f'{redis_key}:20':
+            return redis_data_dates_10
+        elif key == f'{redis_key}:5':
+            return redis_data_dates_5
+        return None
+
+    mock.get.side_effect = dynamic_effect
 
     return mock
 
