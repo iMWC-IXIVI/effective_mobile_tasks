@@ -36,7 +36,7 @@ async def get_dates(
     else:
         logger.info(f'CACHE HITS данные найдены в redis - {cache_name}')
 
-        cache_data = json.loads(cache)
+        cache_data = json.loads(cache)[:last_days]
         result = [DateSchema(**item) for item in cache_data]
 
     return result

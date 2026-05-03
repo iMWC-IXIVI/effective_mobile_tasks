@@ -40,7 +40,10 @@ async def async_session(get_sessionmaker):
 
         yield session
 
-        await session.rollback()
+        for table in Base.metadata.sorted_tables:
+            await session.execute(table.delete())
+
+        await session.commit()
 
 
 @pytest_asyncio.fixture(scope='function')
