@@ -7,7 +7,7 @@ from core import get_redis
 from database.core import get_connection
 
 
-trading_url = f'/api/v1/trading/dates'
+url = f'/api/v1/trading/dates'
 
 
 @pytest.mark.integration
@@ -21,7 +21,7 @@ def test_check_dates_redis_miss(last_days: int, return_counter: int, create_data
     cache_name = f'trading:dates:last_days:{last_days}'
 
     with TestClient(app) as client:
-        response = client.get(f'{trading_url}?last_days={last_days}')
+        response = client.get(f'{url}?last_days={last_days}')
 
     assert response.status_code == 200
     mock_redis_cache_miss.get.assert_called_once_with(cache_name)
@@ -42,7 +42,7 @@ def test_check_dates_redis_hit(last_days: int, return_counter: int, create_data,
     cache_name = f'trading:dates:last_days:{last_days}'
 
     with TestClient(app) as client:
-        response = client.get(f'{trading_url}?last_days={last_days}')
+        response = client.get(f'{url}?last_days={last_days}')
 
     assert response.status_code == 200
     mock_redis_cache_dates_hit.get.assert_called_once_with(cache_name)
