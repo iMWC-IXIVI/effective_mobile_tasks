@@ -111,29 +111,3 @@ def mock_app_settings(mocker: MockerFixture):
 
     mocker.patch('core.settings.Settings.initialize_redis')
     mocker.patch('core.settings.Settings.close_redis_connect')
-
-
-@pytest.fixture(scope='function')
-def client_test_cache_miss(mock_redis_cache_miss, async_session):
-    """Переопределение зависимостей get_connection и async_redis при cache miss"""
-
-    app.dependency_overrides[get_connection] = lambda: async_session
-    app.dependency_overrides[get_redis] = lambda: mock_redis_cache_miss
-
-    with TestClient(app) as client:
-        yield client
-
-    app.dependency_overrides.clear()
-
-
-@pytest.fixture(scope='function')
-def client_test_cache_hit(mock_redis_cache_hit, async_session):
-    """Переопределение зависимостей get_connection и async_redis при cache hit"""
-
-    app.dependency_overrides[get_connection] = lambda: async_session
-    app.dependency_overrides[get_redis] = lambda: mock_redis_cache_hit
-
-    with TestClient(app) as client:
-        yield client
-
-    app.dependency_overrides.clear()
