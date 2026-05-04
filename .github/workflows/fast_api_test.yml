@@ -39,7 +39,4 @@ jobs:
       - name: Run tests
         working-directory: 'fastapi_task/app'
         run: |
-          pytest
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v4
+          pytest --cov-report=term
